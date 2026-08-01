@@ -1,0 +1,50 @@
+To run aws cli commands, first do below setup
+run aws configure
+Enter below from AWS Management console
+aws_access_key_id=
+aws_secret_access_key=
+aws_session_token=
+
+# 1. ECR repository
+aws ecr create-repository --repository-name flask-cicd-app --region ap-south-1
+
+# 2. Create Security group for the EC2 instance , if not exist already(adjust VPC id)
+aws ec2 create-security-group --group-name flask-cicd-sg \
+  --description "flask-cicd-app SG" --vpc-id <your-vpc-id>
+
+aws ec2 authorize-security-group-ingress --group-id <sg-id> \
+  --protocol tcp --port 5000 --cidr 0.0.0.0/0
+
+aws ec2 authorize-security-group-ingress --group-id <sg-id> \
+  --protocol tcp --port 22 --cidr <your-ip>/32
+
+# 3. IAM role + instance profile so EC2 can pull from ECR without static creds
+aws iam create-role --role-name flask-cicd-ec2-role \
+  --assume-role-policy-document '{
+    "Version": "2012-10-17",
+    "Statement": [{
+      "Effect": "Allow",
+      "Principal": {"Service": "ec2.amazonaws.com"},
+      "Action": "sts:AssumeRole"
+    }]
+  }'
+
+aws iam attach-role-policy --role-name flask-cicd-ec2-role \
+  --policy-arn arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+
+aws iam create-instance-profile --instance-profile-name flask-cicd-ec2-profile
+aws iam add-role-to-instance-profile \
+  --instance-profile-name flask-cicd-ec2-profile \
+  --role-name flask-cicd-ec2-role
+
+# 4. Launch EC2 (Amazon Linux 2023) via cli or AWS console, with Docker installed via user-data
+aws ec2 run-instances \
+  --image-id <ami-id-for-your-region> \
+  --instance-type t2.micro \
+  --key-name <your-keypair-name> \
+  --security-group-ids <sg-id> \
+  --iam-instance-profile Name=flask-cicd-ec2-profile \
+  --user-data '#!/bin/bash
+yum install -y docker
+systemctl enable --now docker' \
+  --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=flask-cicd-ec2}]'

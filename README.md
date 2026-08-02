@@ -9,15 +9,51 @@ Built for the "Graded Assignment on CI/CD Pipeline" (Hero Vired).
 ## Status
 
 - [x] Step 1 — Flask app, pytest suite, Dockerfile, deploy.sh
-- [ ] Step 2 — AWS prerequisites (ECR repo, EC2 instance, IAM role)
-- [ ] Step 3 — Jenkins server setup + GitHub webhook trigger
-- [ ] Step 4 — Jenkins credentials (AWS, SSH key, SMTP)
+- [x] Step 2 — AWS prerequisites (ECR repo, EC2 instance, IAM role) — both instances running,
+      see [evidence #6](./screenshots/06-aws-ec2-instances-running.png)
+- [x] Step 3 — Jenkins server setup on EC2 + GitHub webhook trigger — confirmed working, see
+      [evidence #8-10](./screenshots/) (`Started by GitHub push`, webhook delivery `200`)
+- [x] Step 4 — Jenkins credentials (AWS, SSH key, SMTP) — all three working, see
+      [build log](./logs/jenkins-build4-full-console-log.txt) and
+      [evidence #3-4](./screenshots/)
 - [x] Step 5 — Jenkinsfile (checkout → test → build → push → deploy → verify → notify)
-- [x] Step 6 — Email notification content (success/failure) — built into Jenkinsfile's post blocks
-- [ ] Step 7 — Screenshots / recording of a green run and a broken run
+- [x] Step 6 — Email notification content (success/failure) — both cases confirmed, see
+      [evidence #5, #11](./screenshots/) (success) and [evidence #12](./screenshots/) (failure)
+- [x] Step 7 — Green run ✅ and broken run ❌, both with matching emails — see Test Evidence below
 - [ ] Step 8 — Submission file with repo link
 
-## Application
+## Test Evidence
+
+All screenshots live in [`screenshots/`](./screenshots); the full Jenkins console log lives
+in [`logs/`](./logs).
+
+- **Green run (manual trigger):** build #4, commit [`bbd40cb`](https://github.com/tanishq-123/flask-cicd-app/commit/bbd40cb41bef76cbcf07ccf22ebd6b6331cfa4bd), deployed to `13.219.227.60`.
+- **Green run (GitHub webhook trigger):** build #5, commit `cf4f154`, `Started by GitHub push by tanishq-123` — confirms Section 4's auto-trigger-on-push requirement.
+- **Failed run (intentional):** `test_health_check_success` broken on purpose — pipeline stopped at the `Test` stage, failure email correctly reported it.
+
+| #   | File                                                                                                     | What it shows                                                                                                                                                                                                                                                                                                                                                                                         |
+| --- | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | [`01-jenkins-ec2-unlock-screen.png`](./screenshots/01-jenkins-ec2-unlock-screen.png)                     | Jenkins running on the EC2 server (`100.27.15.135:8080`), unlock screen — confirms Jenkins is reachable on the provisioned instance, not just locally                                                                                                                                                                                                                                                 |
+| 2   | [`02-jenkins-container-recreate-terminal.png`](./screenshots/02-jenkins-container-recreate-terminal.png) | Terminal on the Jenkins EC2 instance recreating the `jenkins` container from the custom image and confirming it comes up healthy                                                                                                                                                                                                                                                                      |
+| 3   | [`03-git-pull-buildx-verify-smtp-config.png`](./screenshots/03-git-pull-buildx-verify-smtp-config.png)   | `git pull` picking up the latest `Jenkinsfile`/`jenkins/Dockerfile`, image rebuild, and `docker --version` / `docker buildx version` confirming both are present inside the container after the Docker-CLI-install fix                                                                                                                                                                                |
+| 4   | [`04-smtp-authentication-config.png`](./screenshots/04-smtp-authentication-config.png)                   | Manage Jenkins → System SMTP config: `smtp.gmail.com`, port `465`, SSL enabled — the working config after the port-25-blocked-by-AWS issue was fixed                                                                                                                                                                                                                                                  |
+| 5   | [`05-success-email.png`](./screenshots/05-success-email.png)                                             | Success email received for build #4 — subject prefixed ✅, includes commit SHA, image tag, EC2 target, and pipeline run link, satisfying Section 5's success-email content requirements                                                                                                                                                                                                               |
+| 6   | [`06-aws-ec2-instances-running.png`](./screenshots/06-aws-ec2-instances-running.png)                     | AWS Console showing both EC2 instances running: `flask-cicd-ec2` (app target, t2.micro) and `jenkins-server` (t3.medium)                                                                                                                                                                                                                                                                              |
+| 7   | [`07-external-health-check-curl.png`](./screenshots/07-external-health-check-curl.png)                   | `curl -v` from an external machine (not the instance itself) against `http://13.219.227.60:5000/health` returning `200 OK` — confirms the app is genuinely reachable from outside AWS, not just over loopback/SSH                                                                                                                                                                                     |
+| 8   | [`08-build5-github-push-triggered.png`](./screenshots/08-build5-github-push-triggered.png)               | Build #5 status page: **"Started by GitHub push by tanishq-123"** — proof the pipeline auto-triggers on push, not just via manual "Build Now"                                                                                                                                                                                                                                                         |
+| 9   | [`09-github-webhook-delivery-200.png`](./screenshots/09-github-webhook-delivery-200.png)                 | GitHub's Webhooks → Recent Deliveries tab: `push` event delivered to `http://100.27.15.135:8080/github-webhook/`, response `200`, completed in 0.07s, with the full payload shown                                                                                                                                                                                                                     |
+| 10  | [`10-build5-console-github-push.png`](./screenshots/10-build5-console-github-push.png)                   | Console output for build #5 confirming the same — first line `Started by GitHub push by tanishq-123`                                                                                                                                                                                                                                                                                                  |
+| 11  | [`11-build5-success-email.png`](./screenshots/11-build5-success-email.png)                               | Success email for the webhook-triggered build #5 (commit `cf4f154`), same required fields as evidence #5                                                                                                                                                                                                                                                                                              |
+| 12  | [`12-failed-build-email-test-stage.png`](./screenshots/12-failed-build-email-test-stage.png)             | Failure email — subject prefixed ❌, **`Failed stage: Test`**, commit SHA, branch, and a console-log link — confirms `env.LAST_STAGE` correctly identifies the failed stage per Section 5's failure-email requirements                                                                                                                                                                                |
+| 13  | [`13-failed-build-jenkins-status.png`](./screenshots/13-failed-build-jenkins-status.png)                 | Jenkins build status page for the intentionally broken run: red ❌, `Tests (1 failure)` naming `test_app.test_health_check_success` specifically                                                                                                                                                                                                                                                      |
+| 14  | [`14-github-pr-check-status-failed.png`](./screenshots/14-github-pr-check-status-failed.png)             | GitHub PR #3 (`test-build-fail` → `main`) showing the Jenkins result synced back as a required status check: `continuous-integration/jenkins/pr-head` — "All checks have failed". This is what the `PR-1` branch reference in evidence #12's failure email refers to — Jenkins' Multibranch Pipeline auto-builds pull requests too, not just branch pushes, and reports the result directly on the PR |
+| —   | [`jenkins-build4-full-console-log.txt`](./logs/jenkins-build4-full-console-log.txt)                      | Full console log for build #4: Checkout → Install dependencies → Test (5 passed) → Build (buildx, linux/amd64) → Push to ECR (login + push succeeded) → Deploy to EC2 (`deploy.sh` pull/stop/rm/run + internal health check) → Verify Deployment (independent curl) → Notify. Ends `Finished: SUCCESS`.                                                                                               |
+
+**Note on how the failure test was run:** rather than breaking `main` directly and reverting,
+the intentional test failure was pushed on a separate branch (Jenkins auto-discovered it via
+branch indexing, consistent with a Multibranch Pipeline job structure — see
+`flask-cicd-app/test-build-fail/#1` in evidence #13). This demonstrates the same `Test` stage
+gate without ever leaving `main` in a broken state.
 
 - `app.py` — Flask app with:
   - `GET /` — welcome message
@@ -132,7 +168,7 @@ EC2 instance, the same way it's built locally. That instance needs Docker instal
 2. **SSH in and pull this repo**, so the Dockerfile is actually present on the box:
 
    ```bash
-   ssh -i your-key.pem ec2-user@<jenkins-server-public-ip>
+   ssh -i tanishq-US-keypair.pem ec2-user@100.27.15.135
    git clone https://github.com/<your-username>/flask-cicd-app.git
    cd flask-cicd-app/jenkins
    ```
@@ -156,7 +192,7 @@ EC2 instance, the same way it's built locally. That instance needs Docker instal
    docker exec -it jenkins cat /var/jenkins_home/secrets/initialAdminPassword
    ```
 
-   Visit `http://<jenkins-server-public-ip>:8080` and paste it in.
+   Visit `http://100.27.15.135:8080` and paste it in.
 
    Note: unless the local `jenkins_home` Docker volume is explicitly migrated over (e.g. via
    `docker save`/`load`, an EBS snapshot, or an S3 copy), this is a **fresh Jenkins instance**
@@ -268,9 +304,11 @@ from the Jenkinsfile entirely — the AWS CLI picks up instance-role credentials
 
 ### 8. Verification deliverables
 
-- Screenshot/recording of a full green run ending in a successful EC2 deployment, plus the
+See [Test Evidence](#test-evidence) above for the indexed screenshots and full console log.
+
+- ✅ Screenshot/recording of a full green run ending in a successful EC2 deployment, plus the
   success email received.
-- Screenshot/recording of an intentionally broken run (failing test) showing the pipeline
+- ✅ Screenshot/recording of an intentionally broken run (failing test) showing the pipeline
   stopping at the Test stage, plus the failure email showing the correct failed stage.
 
 ---

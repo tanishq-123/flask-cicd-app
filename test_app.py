@@ -18,7 +18,7 @@ def test_index_success(client):
 def test_health_check_success(client):
     response = client.get("/health")
     assert response.status_code == 200
-    assert response.get_json()["status"] == "ok"
+    assert response.get_json()["status"] == "broken"  # intentional failure for CI/CD demo
 
 
 def test_get_item_success(client):

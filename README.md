@@ -61,20 +61,108 @@ Dockerfile that builds a runnable image.
   ```bash
   aws ecr create-repository --repository-name flask-cicd-app
   ```
-- **EC2 instance** (Amazon Linux 2023 or Ubuntu) with:
-  - Docker installed and running (`yum install -y docker && systemctl enable --now docker`)
+- **EC2 instance** (Amazon Linux 2023, **x86_64** — must match the image architecture built
+  in the pipeline; see Section 5) with:
+  - Docker installed, **enabled and started** (a common gotcha: `yum install docker` alone
+    does not start the daemon or make it survive a reboot — `systemctl enable --now docker`
+    is required too)
+  - **`ec2-user` added to the `docker` group**, so `deploy.sh` can run `docker` commands over
+    SSH without `sudo` (needed since it's a plain SSH exec, not an interactive login shell)
   - **AWS CLI v2 installed** — `deploy.sh` runs on the instance itself and calls
     `aws ecr get-login-password`, so the CLI must be present there (Amazon Linux 2023 ships
     it by default; on Ubuntu install via `apt install -y awscli` or the official installer)
+
+  Recommended launch `user-data`, which handles all three of the above in one shot:
+
+  ```bash
+  #!/bin/bash
+  yum install -y docker
+  systemctl enable --now docker
+  usermod -aG docker ec2-user
+  ```
+
+  If the instance is already running without this, apply it manually via SSH:
+
+  ```bash
+  sudo systemctl enable --now docker
+  sudo usermod -aG docker ec2-user
+  # log out and reconnect (or open a fresh SSH session) for the group change to take effect
+  ```
+
   - An **IAM instance role** attached with `AmazonEC2ContainerRegistryReadOnly` (or a scoped
     equivalent) so the instance can pull from ECR without static credentials
   - A **security group** allowing inbound traffic on the app port (5000) and on port 22 for
     SSH (since this project uses the SSH-based deploy method)
+
 - **Connectivity for deploy**: SSH-based — the pipeline SSHes into the instance using a stored
   private key and runs the `docker pull` / `stop` / `rm` / `run` commands directly (see
   `deploy.sh` for the exact command sequence).
 
 ### 3. Jenkins server setup + GitHub webhook trigger
+
+For local dev, use the custom image in [`jenkins/`](./jenkins) — it bakes in Docker CLI,
+Python/pip/venv, curl, and openssh-client on top of stock Jenkins, so the pipeline's tool
+dependencies don't need to be re-installed by hand after every container restart. See
+[`jenkins/README.md`](./jenkins/README.md) for build/run instructions.
+
+**Running Jenkins on an EC2 server instead of locally.** The `jenkins/Dockerfile` isn't an
+AMI or anything AWS-native — it's a normal Dockerfile that has to be built _on_ the Jenkins
+EC2 instance, the same way it's built locally. That instance needs Docker installed first.
+
+1. **Launch the instance with Docker pre-installed via user-data** (see
+   [`jenkins/README.md`](./jenkins/README.md) for the architecture/security-group rationale —
+   use x86_64, e.g. `t3.medium`):
+
+   ```bash
+   aws ec2 run-instances \
+     --image-id <amazon-linux-2023-ami-id> \
+     --instance-type t3.medium \
+     --key-name <your-keypair-name> \
+     --security-group-ids <jenkins-sg-id> \
+     --user-data '#!/bin/bash
+   yum install -y docker git
+   systemctl enable --now docker
+   usermod -aG docker ec2-user' \
+     --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=jenkins-server}]'
+   ```
+
+   Security group needs inbound `8080` (Jenkins UI + GitHub webhook target) and `22` (your own
+   SSH access).
+
+2. **SSH in and pull this repo**, so the Dockerfile is actually present on the box:
+
+   ```bash
+   ssh -i your-key.pem ec2-user@<jenkins-server-public-ip>
+   git clone https://github.com/<your-username>/flask-cicd-app.git
+   cd flask-cicd-app/jenkins
+   ```
+
+3. **Build and run** — identical commands to local dev:
+
+   ```bash
+   docker build -t flask-cicd-jenkins .
+   docker volume create jenkins_home
+   docker run -d --name jenkins \
+     -p 8080:8080 -p 50000:50000 \
+     -v jenkins_home:/var/jenkins_home \
+     -v /var/run/docker.sock:/var/run/docker.sock \
+     -u root \
+     flask-cicd-jenkins
+   ```
+
+4. **Unlock** via the instance's public IP:
+
+   ```bash
+   docker exec -it jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+   ```
+
+   Visit `http://<jenkins-server-public-ip>:8080` and paste it in.
+
+   Note: unless the local `jenkins_home` Docker volume is explicitly migrated over (e.g. via
+   `docker save`/`load`, an EBS snapshot, or an S3 copy), this is a **fresh Jenkins instance**
+   — the setup wizard, plugin installs, the Pipeline job, and all three credentials
+   (`ec2-ssh-key`, `aws-creds`, SMTP) need to be re-created from scratch, since none of that
+   lives in this repo by design (it's secrets/instance state, not code).
 
 - Install Jenkins with plugins: GitHub, Pipeline, Docker Pipeline, Email Extension (Email-ext),
   AWS/ECR credentials support, SSH Agent.
@@ -146,6 +234,37 @@ Sent via Jenkins Email-ext in `post { success {} failure {} }` blocks.
 
 All sensitive values (AWS credentials or role ARN, SSH private key, EC2 host details) live in
 Jenkins Credentials — never committed to this repository.
+
+**IAM policy for the `aws-creds` credential's underlying IAM user.** The AWS CLI's ECR login
+flow needs more than just ECR push permissions — it also does an implicit availability-zone
+check, so `ec2:DescribeAvailabilityZones` must be granted too or `docker login` fails with an
+unauthorized error before it ever reaches Docker:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecr:GetAuthorizationToken",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:PutImage",
+        "ecr:InitiateLayerUpload",
+        "ecr:UploadLayerPart",
+        "ecr:CompleteLayerUpload",
+        "ec2:DescribeAvailabilityZones"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+A cleaner long-term alternative to a static-key IAM user: attach an **IAM instance role** to
+the Jenkins EC2 server itself (the same pattern already used for the target EC2 instance in
+Section 2), with this same policy, and drop the `aws-creds` credential/`withCredentials` block
+from the Jenkinsfile entirely — the AWS CLI picks up instance-role credentials automatically.
 
 ### 8. Verification deliverables
 

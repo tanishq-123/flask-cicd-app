@@ -2,8 +2,7 @@ FROM jenkins/jenkins:lts
 
 USER root
 
-# Tools required by this repo's Jenkinsfile / deploy.sh:
-#   - docker.io          : docker build / push (needs the host's docker.sock mounted in)
+# Base tools required by this repo's Jenkinsfile / deploy.sh:
 #   - python3, pip,
 #     python3-venv       : Install dependencies / Test stages (python3 -m venv, pytest)
 #   - curl               : Verify Deployment stage's health check
@@ -12,9 +11,11 @@ USER root
 #                           plugin version)
 #   - awscli              : aws ecr get-login-password (Push to ECR stage runs this
 #                           directly on the Jenkins agent, not just inside deploy.sh)
+#   - ca-certificates, gnupg : needed to add Docker's apt repo below
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        docker.io \
+        ca-certificates \
+        gnupg \
         python3 \
         python3-venv \
         python3-pip \
@@ -23,16 +24,25 @@ RUN apt-get update && \
         awscli && \
     rm -rf /var/lib/apt/lists/*
 
-# docker buildx (see Build stage — target EC2 is x86_64, images must be built for
-# linux/amd64 regardless of the Jenkins host's own architecture). The buildx CLI plugin
-# isn't in Debian's default apt repos (it only ships via Docker's own apt repo), so
-# install the binary directly into Docker's system-wide plugin directory instead.
-RUN mkdir -p /usr/libexec/docker/cli-plugins && \
-    BUILDX_VERSION=$(curl -s https://api.github.com/repos/docker/buildx/releases/latest | \
-        grep '"tag_name"' | cut -d '"' -f4) && \
-    curl -sSL "https://github.com/docker/buildx/releases/download/${BUILDX_VERSION}/buildx-${BUILDX_VERSION}.linux-amd64" \
-        -o /usr/libexec/docker/cli-plugins/docker-buildx && \
-    chmod +x /usr/libexec/docker/cli-plugins/docker-buildx
+# Docker CLI + buildx, from Docker's own official apt repo.
+# Debian's own docker.io package has proven unreliable across base image variants
+# (installed cleanly but produced no /usr/bin/docker binary in testing) — Docker's
+# official repo is the standard, dependable source and also ships docker-buildx-plugin,
+# so no separate binary download is needed for that either. We only need the CLI here,
+# not the daemon (dockerd) — the container talks to the host's Docker daemon via the
+# mounted /var/run/docker.sock.
+RUN install -m 0755 -d /etc/apt/keyrings && \
+    curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc && \
+    chmod a+r /etc/apt/keyrings/docker.asc && \
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" \
+      > /etc/apt/sources.list.d/docker.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        docker-ce-cli \
+        docker-buildx-plugin && \
+    rm -rf /var/lib/apt/lists/*
 
 # Let the jenkins user run docker (the socket is mounted from the host at runtime)
 RUN groupadd -f docker && usermod -aG docker jenkins

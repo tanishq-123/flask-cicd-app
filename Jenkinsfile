@@ -5,7 +5,7 @@ pipeline {
         AWS_REGION   = 'us-east-1'
         ECR_REPO     = '277385995709.dkr.ecr.us-east-1.amazonaws.com/flask-cicd-app'
         IMAGE_TAG    = "${env.GIT_COMMIT}"
-        EC2_HOST     = 'ec2-user@44.204.225.143'
+        EC2_HOST     = 'ec2-user@13.219.227.60'
         APP_PORT     = '5000'
         CONTAINER    = 'flask-app'
     }

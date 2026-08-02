@@ -1,0 +1,329 @@
+Started by user Tanishq bansal
+Obtained Jenkinsfile from git https://github.com/tanishq-123/flask-cicd-app
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/jenkins_home/workspace/flask-cicd-app
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+ > git rev-parse --resolve-git-dir /var/jenkins_home/workspace/flask-cicd-app/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/tanishq-123/flask-cicd-app # timeout=10
+Fetching upstream changes from https://github.com/tanishq-123/flask-cicd-app
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+ > git fetch --tags --force --progress -- https://github.com/tanishq-123/flask-cicd-app +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse origin/main^{commit} # timeout=10
+Checking out Revision bbd40cb41bef76cbcf07ccf22ebd6b6331cfa4bd (origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f bbd40cb41bef76cbcf07ccf22ebd6b6331cfa4bd # timeout=10
+Commit message: "edited jenkins dockerfile"
+ > git rev-list --no-walk bbd40cb41bef76cbcf07ccf22ebd6b6331cfa4bd # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timestamps
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Checkout)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] checkout
+[2026-08-02T11:42:05.485Z] Selected Git installation does not exist. Using Default
+[2026-08-02T11:42:05.485Z] The recommended git tool is: NONE
+[2026-08-02T11:42:05.485Z] No credentials specified
+[2026-08-02T11:42:05.485Z]  > git rev-parse --resolve-git-dir /var/jenkins_home/workspace/flask-cicd-app/.git # timeout=10
+[2026-08-02T11:42:05.491Z] Fetching changes from the remote Git repository
+[2026-08-02T11:42:05.499Z]  > git config remote.origin.url https://github.com/tanishq-123/flask-cicd-app # timeout=10
+[2026-08-02T11:42:05.506Z] Fetching upstream changes from https://github.com/tanishq-123/flask-cicd-app
+[2026-08-02T11:42:05.507Z]  > git --version # timeout=10
+[2026-08-02T11:42:05.511Z]  > git --version # 'git version 2.47.3'
+[2026-08-02T11:42:05.511Z]  > git fetch --tags --force --progress -- https://github.com/tanishq-123/flask-cicd-app +refs/heads/*:refs/remotes/origin/* # timeout=10
+[2026-08-02T11:42:05.622Z]  > git rev-parse origin/main^{commit} # timeout=10
+[2026-08-02T11:42:05.627Z] Checking out Revision bbd40cb41bef76cbcf07ccf22ebd6b6331cfa4bd (origin/main)
+[2026-08-02T11:42:05.627Z]  > git config core.sparsecheckout # timeout=10
+[2026-08-02T11:42:05.632Z]  > git checkout -f bbd40cb41bef76cbcf07ccf22ebd6b6331cfa4bd # timeout=10
+[2026-08-02T11:42:05.638Z] Commit message: "edited jenkins dockerfile"
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Install dependencies)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
+[2026-08-02T11:42:06.098Z] + python3 -m venv venv
+[2026-08-02T11:42:07.971Z] + . venv/bin/activate
+[2026-08-02T11:42:07.971Z] + deactivate nondestructive
+[2026-08-02T11:42:07.971Z] + [ -n  ]
+[2026-08-02T11:42:07.971Z] + [ -n  ]
+[2026-08-02T11:42:07.971Z] + hash -r
+[2026-08-02T11:42:07.971Z] + [ -n  ]
+[2026-08-02T11:42:07.971Z] + unset VIRTUAL_ENV
+[2026-08-02T11:42:07.971Z] + unset VIRTUAL_ENV_PROMPT
+[2026-08-02T11:42:07.971Z] + [ ! nondestructive = nondestructive ]
+[2026-08-02T11:42:07.971Z] + uname
+[2026-08-02T11:42:07.971Z] + export VIRTUAL_ENV=/var/jenkins_home/workspace/flask-cicd-app/venv
+[2026-08-02T11:42:07.971Z] + _OLD_VIRTUAL_PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+[2026-08-02T11:42:07.971Z] + PATH=/var/jenkins_home/workspace/flask-cicd-app/venv/bin:/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+[2026-08-02T11:42:07.971Z] + export PATH
+[2026-08-02T11:42:07.971Z] + VIRTUAL_ENV_PROMPT=venv
+[2026-08-02T11:42:07.971Z] + export VIRTUAL_ENV_PROMPT
+[2026-08-02T11:42:07.971Z] + [ -n  ]
+[2026-08-02T11:42:07.971Z] + [ -z  ]
+[2026-08-02T11:42:07.971Z] + _OLD_VIRTUAL_PS1=# 
+[2026-08-02T11:42:07.971Z] + PS1=(venv) # 
+[2026-08-02T11:42:07.971Z] + export PS1
+[2026-08-02T11:42:07.971Z] + hash -r
+[2026-08-02T11:42:07.971Z] + pip install --upgrade pip
+[2026-08-02T11:42:07.971Z] Requirement already satisfied: pip in ./venv/lib/python3.13/site-packages (26.2)
+[2026-08-02T11:42:08.222Z] + pip install -r requirements.txt
+[2026-08-02T11:42:08.477Z] Requirement already satisfied: Flask==3.0.3 in ./venv/lib/python3.13/site-packages (from -r requirements.txt (line 1)) (3.0.3)
+[2026-08-02T11:42:08.477Z] Requirement already satisfied: gunicorn==22.0.0 in ./venv/lib/python3.13/site-packages (from -r requirements.txt (line 2)) (22.0.0)
+[2026-08-02T11:42:08.480Z] Requirement already satisfied: pytest==8.2.2 in ./venv/lib/python3.13/site-packages (from -r requirements.txt (line 3)) (8.2.2)
+[2026-08-02T11:42:08.480Z] Requirement already satisfied: Werkzeug>=3.0.0 in ./venv/lib/python3.13/site-packages (from Flask==3.0.3->-r requirements.txt (line 1)) (3.1.8)
+[2026-08-02T11:42:08.480Z] Requirement already satisfied: Jinja2>=3.1.2 in ./venv/lib/python3.13/site-packages (from Flask==3.0.3->-r requirements.txt (line 1)) (3.1.6)
+[2026-08-02T11:42:08.480Z] Requirement already satisfied: itsdangerous>=2.1.2 in ./venv/lib/python3.13/site-packages (from Flask==3.0.3->-r requirements.txt (line 1)) (2.2.0)
+[2026-08-02T11:42:08.480Z] Requirement already satisfied: click>=8.1.3 in ./venv/lib/python3.13/site-packages (from Flask==3.0.3->-r requirements.txt (line 1)) (8.4.2)
+[2026-08-02T11:42:08.480Z] Requirement already satisfied: blinker>=1.6.2 in ./venv/lib/python3.13/site-packages (from Flask==3.0.3->-r requirements.txt (line 1)) (1.9.0)
+[2026-08-02T11:42:08.480Z] Requirement already satisfied: packaging in ./venv/lib/python3.13/site-packages (from gunicorn==22.0.0->-r requirements.txt (line 2)) (26.2)
+[2026-08-02T11:42:08.480Z] Requirement already satisfied: iniconfig in ./venv/lib/python3.13/site-packages (from pytest==8.2.2->-r requirements.txt (line 3)) (2.3.0)
+[2026-08-02T11:42:08.480Z] Requirement already satisfied: pluggy<2.0,>=1.5 in ./venv/lib/python3.13/site-packages (from pytest==8.2.2->-r requirements.txt (line 3)) (1.6.0)
+[2026-08-02T11:42:08.480Z] Requirement already satisfied: MarkupSafe>=2.0 in ./venv/lib/python3.13/site-packages (from Jinja2>=3.1.2->Flask==3.0.3->-r requirements.txt (line 1)) (3.0.3)
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
+[2026-08-02T11:42:09.215Z] + . venv/bin/activate
+[2026-08-02T11:42:09.215Z] + deactivate nondestructive
+[2026-08-02T11:42:09.215Z] + [ -n  ]
+[2026-08-02T11:42:09.215Z] + [ -n  ]
+[2026-08-02T11:42:09.215Z] + hash -r
+[2026-08-02T11:42:09.215Z] + [ -n  ]
+[2026-08-02T11:42:09.215Z] + unset VIRTUAL_ENV
+[2026-08-02T11:42:09.215Z] + unset VIRTUAL_ENV_PROMPT
+[2026-08-02T11:42:09.215Z] + [ ! nondestructive = nondestructive ]
+[2026-08-02T11:42:09.215Z] + uname
+[2026-08-02T11:42:09.215Z] + export VIRTUAL_ENV=/var/jenkins_home/workspace/flask-cicd-app/venv
+[2026-08-02T11:42:09.215Z] + _OLD_VIRTUAL_PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+[2026-08-02T11:42:09.215Z] + PATH=/var/jenkins_home/workspace/flask-cicd-app/venv/bin:/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+[2026-08-02T11:42:09.215Z] + export PATH
+[2026-08-02T11:42:09.215Z] + VIRTUAL_ENV_PROMPT=venv
+[2026-08-02T11:42:09.215Z] + export VIRTUAL_ENV_PROMPT
+[2026-08-02T11:42:09.215Z] + [ -n  ]
+[2026-08-02T11:42:09.215Z] + [ -z  ]
+[2026-08-02T11:42:09.215Z] + _OLD_VIRTUAL_PS1=# 
+[2026-08-02T11:42:09.215Z] + PS1=(venv) # 
+[2026-08-02T11:42:09.215Z] + export PS1
+[2026-08-02T11:42:09.216Z] + hash -r
+[2026-08-02T11:42:09.216Z] + pytest --junitxml=results.xml
+[2026-08-02T11:42:09.467Z] ============================= test session starts ==============================
+[2026-08-02T11:42:09.468Z] platform linux -- Python 3.13.5, pytest-8.2.2, pluggy-1.6.0
+[2026-08-02T11:42:09.468Z] rootdir: /var/jenkins_home/workspace/flask-cicd-app
+[2026-08-02T11:42:09.468Z] collected 5 items
+[2026-08-02T11:42:09.468Z] 
+[2026-08-02T11:42:09.721Z] test_app.py .....                                                        [100%]
+[2026-08-02T11:42:09.721Z] 
+[2026-08-02T11:42:09.721Z] -- generated xml file: /var/jenkins_home/workspace/flask-cicd-app/results.xml --
+[2026-08-02T11:42:09.721Z] ============================== 5 passed in 0.25s ===============================
+Post stage
+[Pipeline] junit
+[2026-08-02T11:42:09.759Z] Recording test results
+[2026-08-02T11:42:09.771Z] [Checks API] No suitable checks publisher found.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sh
+[2026-08-02T11:42:10.245Z] + docker build --platform linux/amd64 -t 277385995709.dkr.ecr.us-east-1.amazonaws.com/flask-cicd-app:bbd40cb41bef76cbcf07ccf22ebd6b6331cfa4bd .
+[2026-08-02T11:42:10.496Z] #0 building with "default" instance using docker driver
+[2026-08-02T11:42:10.496Z] 
+[2026-08-02T11:42:10.496Z] #1 [internal] load build definition from Dockerfile
+[2026-08-02T11:42:10.496Z] #1 transferring dockerfile: 472B done
+[2026-08-02T11:42:10.496Z] #1 DONE 0.0s
+[2026-08-02T11:42:10.496Z] 
+[2026-08-02T11:42:10.496Z] #2 [internal] load metadata for docker.io/library/python:3.11-slim
+[2026-08-02T11:42:10.496Z] #2 DONE 0.1s
+[2026-08-02T11:42:10.747Z] 
+[2026-08-02T11:42:10.747Z] #3 [internal] load .dockerignore
+[2026-08-02T11:42:10.747Z] #3 transferring context: 2B done
+[2026-08-02T11:42:10.747Z] #3 DONE 0.0s
+[2026-08-02T11:42:10.747Z] 
+[2026-08-02T11:42:10.747Z] #4 [1/5] FROM docker.io/library/python:3.11-slim@sha256:db3ff2e1800a8581e2c48a27c3995339d47bdf046da21c7627accd3d51053a93
+[2026-08-02T11:42:10.747Z] #4 DONE 0.0s
+[2026-08-02T11:42:10.747Z] 
+[2026-08-02T11:42:10.747Z] #5 [internal] load build context
+[2026-08-02T11:42:10.747Z] #5 transferring context: 189B done
+[2026-08-02T11:42:10.747Z] #5 DONE 0.0s
+[2026-08-02T11:42:10.747Z] 
+[2026-08-02T11:42:10.747Z] #6 [3/5] COPY requirements.txt .
+[2026-08-02T11:42:10.747Z] #6 CACHED
+[2026-08-02T11:42:10.747Z] 
+[2026-08-02T11:42:10.747Z] #7 [4/5] RUN pip install --no-cache-dir -r requirements.txt
+[2026-08-02T11:42:10.747Z] #7 CACHED
+[2026-08-02T11:42:10.747Z] 
+[2026-08-02T11:42:10.747Z] #8 [2/5] WORKDIR /app
+[2026-08-02T11:42:10.747Z] #8 CACHED
+[2026-08-02T11:42:10.747Z] 
+[2026-08-02T11:42:10.747Z] #9 [5/5] COPY app.py .
+[2026-08-02T11:42:10.747Z] #9 CACHED
+[2026-08-02T11:42:10.747Z] 
+[2026-08-02T11:42:10.747Z] #10 exporting to image
+[2026-08-02T11:42:10.747Z] #10 exporting layers done
+[2026-08-02T11:42:10.747Z] #10 writing image sha256:46700f9aeb18318a9673509204c6607c5c31f2889f35f8f7591e5e1bee1e4158 done
+[2026-08-02T11:42:10.747Z] #10 naming to 277385995709.dkr.ecr.us-east-1.amazonaws.com/flask-cicd-app:bbd40cb41bef76cbcf07ccf22ebd6b6331cfa4bd done
+[2026-08-02T11:42:10.747Z] #10 DONE 0.0s
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Push to ECR)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] withCredentials
+[2026-08-02T11:42:10.961Z] Masking supported pattern matches of $AWS_ACCESS_KEY_ID or $AWS_SECRET_ACCESS_KEY
+[Pipeline] {
+[Pipeline] sh
+[2026-08-02T11:42:11.250Z] + + aws ecr get-login-password --regiondocker us-east-1 login
+[2026-08-02T11:42:11.251Z]  --username AWS --password-stdin 277385995709.dkr.ecr.us-east-1.amazonaws.com/flask-cicd-app
+[2026-08-02T11:42:11.805Z] 
+[2026-08-02T11:42:11.805Z] WARNING! Your credentials are stored unencrypted in '/root/.docker/config.json'.
+[2026-08-02T11:42:11.805Z] Configure a credential helper to remove this warning. See
+[2026-08-02T11:42:11.805Z] https://docs.docker.com/go/credential-store/
+[2026-08-02T11:42:11.805Z] 
+[2026-08-02T11:42:11.805Z] Login Succeeded
+[2026-08-02T11:42:11.805Z] + docker push 277385995709.dkr.ecr.us-east-1.amazonaws.com/flask-cicd-app:bbd40cb41bef76cbcf07ccf22ebd6b6331cfa4bd
+[2026-08-02T11:42:11.805Z] The push refers to repository [277385995709.dkr.ecr.us-east-1.amazonaws.com/flask-cicd-app]
+[2026-08-02T11:42:11.805Z] f5cfa5cf00b3: Preparing
+[2026-08-02T11:42:11.805Z] d8e9d58ad3da: Preparing
+[2026-08-02T11:42:11.805Z] 660ce92d5ad5: Preparing
+[2026-08-02T11:42:11.805Z] 05d45d008054: Preparing
+[2026-08-02T11:42:11.805Z] fc95983f78e7: Preparing
+[2026-08-02T11:42:11.805Z] 99ab40bce873: Preparing
+[2026-08-02T11:42:11.805Z] 1d1e59fb3586: Preparing
+[2026-08-02T11:42:11.805Z] f2ec4de84f55: Preparing
+[2026-08-02T11:42:11.805Z] 99ab40bce873: Waiting
+[2026-08-02T11:42:11.805Z] 1d1e59fb3586: Waiting
+[2026-08-02T11:42:11.805Z] f2ec4de84f55: Waiting
+[2026-08-02T11:42:12.059Z] 05d45d008054: Layer already exists
+[2026-08-02T11:42:12.059Z] 660ce92d5ad5: Layer already exists
+[2026-08-02T11:42:12.059Z] f5cfa5cf00b3: Layer already exists
+[2026-08-02T11:42:12.059Z] d8e9d58ad3da: Layer already exists
+[2026-08-02T11:42:12.059Z] fc95983f78e7: Layer already exists
+[2026-08-02T11:42:12.059Z] 99ab40bce873: Layer already exists
+[2026-08-02T11:42:12.059Z] 1d1e59fb3586: Layer already exists
+[2026-08-02T11:42:12.059Z] f2ec4de84f55: Layer already exists
+[2026-08-02T11:42:12.059Z] bbd40cb41bef76cbcf07ccf22ebd6b6331cfa4bd: digest: sha256:3adc4aac5796ead72243b8480bd5b45811a52875ea1fb945345a19c7c18f0f88 size: 1990
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Deploy to EC2)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sshagent
+[2026-08-02T11:42:12.281Z] [ssh-agent] Using credentials ec2-user (EC2 SSH key for flask-cicd-app deploy)
+[2026-08-02T11:42:12.281Z] $ ssh-agent
+[2026-08-02T11:42:12.289Z] SSH_AUTH_SOCK=/tmp/ssh-1oAXmkTWJVHS/agent.794
+[2026-08-02T11:42:12.289Z] SSH_AGENT_PID=798
+[2026-08-02T11:42:12.289Z] Running ssh-add (command line suppressed)
+[2026-08-02T11:42:12.300Z] [ssh-agent] Started.
+[Pipeline] {
+[Pipeline] sh
+[2026-08-02T11:42:12.595Z] + scp -o StrictHostKeyChecking=no deploy.sh ec2-user@13.219.227.60:/tmp/deploy.sh
+[2026-08-02T11:42:12.851Z] + ssh -o StrictHostKeyChecking=no ec2-user@13.219.227.60 chmod +x /tmp/deploy.sh
+[2026-08-02T11:42:13.102Z] + ssh -o StrictHostKeyChecking=no ec2-user@13.219.227.60 /tmp/deploy.sh 277385995709.dkr.ecr.us-east-1.amazonaws.com/flask-cicd-app bbd40cb41bef76cbcf07ccf22ebd6b6331cfa4bd us-east-1
+[2026-08-02T11:42:13.353Z] Logging into ECR...
+[2026-08-02T11:42:13.904Z] WARNING! Your password will be stored unencrypted in /home/ec2-user/.docker/config.json.
+[2026-08-02T11:42:13.904Z] Configure a credential helper to remove this warning. See
+[2026-08-02T11:42:13.904Z] https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+[2026-08-02T11:42:13.904Z] 
+[2026-08-02T11:42:13.904Z] Login Succeeded
+[2026-08-02T11:42:13.904Z] Pulling image 277385995709.dkr.ecr.us-east-1.amazonaws.com/flask-cicd-app:bbd40cb41bef76cbcf07ccf22ebd6b6331cfa4bd ...
+[2026-08-02T11:42:14.155Z] bbd40cb41bef76cbcf07ccf22ebd6b6331cfa4bd: Pulling from flask-cicd-app
+[2026-08-02T11:42:14.155Z] Digest: sha256:3adc4aac5796ead72243b8480bd5b45811a52875ea1fb945345a19c7c18f0f88
+[2026-08-02T11:42:14.155Z] Status: Image is up to date for 277385995709.dkr.ecr.us-east-1.amazonaws.com/flask-cicd-app:bbd40cb41bef76cbcf07ccf22ebd6b6331cfa4bd
+[2026-08-02T11:42:14.155Z] 277385995709.dkr.ecr.us-east-1.amazonaws.com/flask-cicd-app:bbd40cb41bef76cbcf07ccf22ebd6b6331cfa4bd
+[2026-08-02T11:42:14.155Z] Stopping and removing any existing container...
+[2026-08-02T11:42:14.406Z] flask-app
+[2026-08-02T11:42:14.406Z] flask-app
+[2026-08-02T11:42:14.406Z] Starting new container...
+[2026-08-02T11:42:14.656Z] 4bff99f59e75587c5a94d807a9e16c8f5098c94535fcb8fbc0b769cc56b423bc
+[2026-08-02T11:42:14.907Z] Verifying deployment via /health ...
+[2026-08-02T11:42:18.136Z] {"status":"ok"}
+[2026-08-02T11:42:18.136Z] 
+[2026-08-02T11:42:18.136Z] Deployment verified successfully.
+[Pipeline] }
+[2026-08-02T11:42:18.148Z] $ ssh-agent -k
+[2026-08-02T11:42:18.154Z] unset SSH_AUTH_SOCK;
+[2026-08-02T11:42:18.155Z] unset SSH_AGENT_PID;
+[2026-08-02T11:42:18.155Z] echo Agent pid 798 killed;
+[2026-08-02T11:42:18.155Z] [ssh-agent] Stopped.
+[Pipeline] // sshagent
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Verify Deployment)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] sshagent
+[2026-08-02T11:42:18.345Z] [ssh-agent] Using credentials ec2-user (EC2 SSH key for flask-cicd-app deploy)
+[2026-08-02T11:42:18.345Z] $ ssh-agent
+[2026-08-02T11:42:18.355Z] SSH_AUTH_SOCK=/tmp/ssh-nL5rEWrZBKrc/agent.828
+[2026-08-02T11:42:18.355Z] SSH_AGENT_PID=832
+[2026-08-02T11:42:18.355Z] Running ssh-add (command line suppressed)
+[2026-08-02T11:42:18.370Z] [ssh-agent] Started.
+[Pipeline] {
+[Pipeline] sh
+[2026-08-02T11:42:18.667Z] + ssh -o StrictHostKeyChecking=no ec2-user@13.219.227.60 curl -sf http://localhost:5000/health
+[2026-08-02T11:42:18.917Z] {"status":"ok"}
+[Pipeline] }
+[2026-08-02T11:42:18.929Z] $ ssh-agent -k
+[2026-08-02T11:42:18.936Z] unset SSH_AUTH_SOCK;
+[2026-08-02T11:42:18.936Z] unset SSH_AGENT_PID;
+[2026-08-02T11:42:18.936Z] echo Agent pid 832 killed;
+[2026-08-02T11:42:18.937Z] [ssh-agent] Stopped.
+[Pipeline] // sshagent
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] emailext
+[2026-08-02T11:42:19.083Z] Sending email to: tanishqb212000@gmail.com
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timestamps
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS

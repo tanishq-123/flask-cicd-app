@@ -57,7 +57,7 @@ pipeline {
         stage('Build') {
             steps {
                 script { env.LAST_STAGE = 'Build' }
-                sh "docker buildx build --platform linux/amd64,linux/arm64 -t ${ECR_REPO}:${IMAGE_TAG} --push ."
+                sh "docker build --platform linux/amd64 -t ${ECR_REPO}:${IMAGE_TAG} ."
             }
         }
 
